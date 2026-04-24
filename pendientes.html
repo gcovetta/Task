@@ -111,6 +111,8 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .nab{background:rgba(0,0,0,.15);border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;
   font-size:.62rem;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .nab:hover{background:rgba(0,0,0,.28);}
+.nab-ok:hover{background:rgba(46,204,113,.45)!important;}
+.nab-del:hover{background:rgba(192,57,43,.45)!important;}
 .ntit{font-size:.8rem;font-weight:700;color:rgba(0,0,0,.84);margin-bottom:3px;line-height:1.25;}
 .ndesc{font-size:.7rem;color:rgba(0,0,0,.55);line-height:1.4;flex:1;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -589,8 +591,10 @@ function noteCard(n) {
     <div class="nhdr">
       <span class="ncat">${CAT_ICON[n.cat]||'📌'} ${n.cat==='construccion'?'Construcción':n.cat.charAt(0).toUpperCase()+n.cat.slice(1)}</span>
       <div class="nacts">
-        <button class="nab" title="${TOG_TITLE[n.status]||'Cambiar'}"
-          onclick="event.stopPropagation();tog('${n.id}')">${TOG_ICON[n.status]||'✓'}</button>
+        <button class="nab nab-ok" title="${n.status==='done'?'Reabrir':'Completar'}"
+          onclick="event.stopPropagation();quickDone('${n.id}')">${n.status==='done'?'↩':'✓'}</button>
+        <button class="nab nab-del" title="Eliminar"
+          onclick="event.stopPropagation();quickDel('${n.id}')">✕</button>
       </div>
     </div>
     <div class="ntit">${esc(n.title)}</div>
@@ -658,6 +662,30 @@ function render() {
       </div>
     </div>`;
   }).join('');
+}
+
+/* quick actions from card */
+function quickDone(id) {
+  const n=notes.find(x=>x.id===id);
+  if(!n) return;
+  if(n.status==='done'){ n.status='todo'; n.done=false; saveLocal(); render(); syncNote(n); return; }
+  n.status='done'; n.done=true; n.progress=100;
+  if(n.repeat) {
+    saveLocal(); render();
+    const nd=getNextDue(n.due,n.repeat);
+    const nn={...n,id:uid(),status:'todo',done:false,ts:Date.now(),due:nd,progress:0};
+    notes.unshift(nn);
+    saveLocal(); render();
+    showToast(`🔄 Próxima ${REPEAT_LABELS[n.repeat].toLowerCase()}: ${fmt(nd)}`);
+    syncNote(n); syncNote(nn);
+  } else { saveLocal(); render(); syncNote(n); }
+}
+function quickDel(id) {
+  const n=notes.find(x=>x.id===id);
+  if(!n||!confirm(`¿Eliminar "${n.title}"?`)) return;
+  notes=notes.filter(x=>x.id!==id);
+  notes.forEach(x=>{if(x.deps)x.deps=x.deps.filter(d=>d!==id);});
+  saveLocal(); render(); syncDelete(id);
 }
 
 /* toggle status */
