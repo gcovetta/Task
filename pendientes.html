@@ -79,6 +79,9 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .kcol-cnt{font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:50px;background:var(--bg4);color:var(--text2);}
 .kcol-body{padding:8px;display:flex;flex-wrap:wrap;flex-direction:row;gap:5px;align-content:flex-start;min-height:80px;}
 .kcol-empty{text-align:center;padding:24px 10px;color:var(--text2);font-size:.72rem;opacity:.5;}
+.pri-div{display:flex;align-items:center;gap:5px;width:100%;margin:5px 0 2px;
+  font-size:.56rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+.pri-div::before,.pri-div::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* ── Sticky Note ── */
 .note{border-radius:4px;padding:8px 9px 7px;cursor:pointer;
@@ -609,6 +612,21 @@ function noteCard(n) {
   </div>`;
 }
 
+/* column body grouped by priority */
+function renderColBody(list) {
+  if(!list.length) return `<div class="kcol-empty">Sin tareas aquí</div>`;
+  const groups=[
+    {pri:'alta',  lbl:'🔴 Alta'},
+    {pri:'normal',lbl:'⚪ Normal'},
+    {pri:'baja',  lbl:'🔵 Baja'},
+  ].map(g=>({...g,cards:list.filter(n=>n.pri===g.pri)})).filter(g=>g.cards.length);
+  if(groups.length<=1) return list.map(noteCard).join('');
+  return groups.map((g,i)=>
+    (i>0?`<div class="pri-div"><span>${g.lbl}</span></div>`:'')+
+    g.cards.map(noteCard).join('')
+  ).join('');
+}
+
 /* render kanban */
 function render() {
   const kanban=document.getElementById('kanban'), stats=document.getElementById('stats');
@@ -636,7 +654,7 @@ function render() {
         <span class="kcol-cnt">${list.length}</span>
       </div>
       <div class="kcol-body">
-        ${list.length?list.map(noteCard).join(''):`<div class="kcol-empty">Sin tareas aquí</div>`}
+        ${renderColBody(list)}
       </div>
     </div>`;
   }).join('');
