@@ -268,9 +268,9 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 <header>
   <h1>📌 Mis Pendientes <small>by Garo</small></h1>
   <div class="hbtns">
-    <a class="btn-tree" href="/Gastos/GastoTrack_6.html">💰 Gastos</a>
+    <a class="btn-tree" href="https://gcovetta.github.io/portafolio-tracker/GastoTrack_6.html">💰 Gastos</a>
     <button class="btn-tree" onclick="openTree()">🌳 Árbol</button>
-    <button class="btn-add"  onclick="openModal()">+ Nueva nota</button>
+    <button class="btn-add"  onclick="openModal()" title="Nueva nota">🗒️</button>
   </div>
 </header>
 
@@ -332,7 +332,7 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
     <div class="fg">
       <label>ESTADO</label>
       <select id="fstatus">
-        <option value="todo">📋 Por Hacer</option>
+        <option value="todo">📋 Backlog</option>
         <option value="wip">⏳ En Progreso</option>
         <option value="done">✅ Realizado</option>
       </select>
@@ -426,8 +426,8 @@ const AVC   = ['#8e44ad','#2980b9','#27ae60','#d35400','#c0392b','#16a085','#7f8
 const REPEAT_LABELS = {daily:'Diaria',weekly:'Semanal',biweekly:'Quincenal',monthly:'Mensual',yearly:'Anual'};
 const CAT_ICON = {personal:'🏠',trabajo:'💼',construccion:'🏗️'};
 
-const COLS_K = ['todo','wip','done'];
-const COL_LABEL = {todo:'📋 Por Hacer', wip:'⏳ En Progreso', done:'✅ Realizadas'};
+const COLS_K = ['wip','todo','done'];
+const COL_LABEL = {todo:'📋 Backlog', wip:'⏳ En Progreso', done:'✅ Realizadas'};
 const COL_CLS   = {todo:'col-todo', wip:'col-wip', done:'col-done'};
 const NEXT_ST   = {todo:'wip', wip:'done', done:'todo'};
 const TOG_ICON  = {todo:'▶', wip:'✓', done:'↩'};
@@ -831,7 +831,7 @@ function openModal(id=null) {
   } else {
     document.getElementById('mtit').textContent='Nueva nota';
     ['ft','fd'].forEach(x=>document.getElementById(x).value='');
-    document.getElementById('fcat').value='personal';
+    document.getElementById('fcat').value=(['trabajo','personal','construccion'].includes(fil)?fil:'personal');
     document.getElementById('fpri').value='normal';
     document.getElementById('fstatus').value='todo';
     document.getElementById('fdue').value='';
