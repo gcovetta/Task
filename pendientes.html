@@ -141,7 +141,13 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .note.orange{background:#FFCC80;}.note.purple{background:#CE93D8;}
 .note.teal{background:#80DEEA;}.note.red{background:#EF9A9A;}
 
-/* ── Toast ── */
+/* Jefe priority badge */
+.note .npri-jefe{font-size:.65rem;animation:jefe-pulse 1.5s ease-in-out infinite;}
+@keyframes jefe-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.7;transform:scale(1.2);}}
+/* Jefe priority glow on card */
+.note[data-pri="jefe"]:not(.done){box-shadow:2px 3px 8px var(--shadow),0 0 0 2px rgba(255,200,0,.45),0 0 12px rgba(255,200,0,.2)!important;}
+
+
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
   background:#2ecc71;color:#fff;padding:10px 22px;border-radius:50px;font-size:.85rem;font-weight:700;
   box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;}
@@ -321,6 +327,7 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
     <div class="fg">
       <label>PRIORIDAD</label>
       <select id="fpri">
+        <option value="jefe">👮 Jefe</option>
         <option value="normal">⚪ Normal</option>
         <option value="alta">🔴 Alta</option>
         <option value="baja">🔵 Baja</option>
@@ -441,7 +448,7 @@ function today(){ return new Date().toISOString().split('T')[0]; }
 function isOv(d){ return d && d < today(); }
 function isNr(d){ if(!d)return false;const ms=new Date(d+'T23:59:59')-new Date();return ms>=0&&ms<48*36e5; }
 function fmt(d) { if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`; }
-function pI(p)  { return p==='alta'?'🔴':p==='baja'?'🔵':'⚪'; }
+function pI(p)  { return p==='jefe'?'👮':p==='alta'?'🔴':p==='baja'?'🔵':'⚪'; }
 function avc(n) { const v=n.split('').reduce((a,c)=>a+c.charCodeAt(0),0);return AVC[v%AVC.length]; }
 function isBlk(n){ return (n.deps||[]).some(id=>{const d=notes.find(x=>x.id===id);return d&&d.status!=='done';}); }
 function progCol(p){ return p>=100?'rgba(46,204,113,.65)':p>0?'rgba(124,108,255,.55)':'rgba(0,0,0,.1)'; }
@@ -566,7 +573,7 @@ function getList(status) {
   else if(fil==='personal')     arr=arr.filter(n=>n.cat==='personal');
   else if(fil==='construccion') arr=arr.filter(n=>n.cat==='construccion');
   else if(fil==='overdue')      arr=arr.filter(n=>isOv(n.due));
-  const po={alta:0,normal:1,baja:2};
+  const po={jefe:0,alta:1,normal:2,baja:3};
   if(srt==='priority') arr.sort((a,b)=>po[a.pri]-po[b.pri]);
   else if(srt==='due') arr.sort((a,b)=>(!a.due&&!b.due)?0:!a.due?1:!b.due?-1:a.due.localeCompare(b.due));
   else arr.sort((a,b)=>b.ts-a.ts);
@@ -582,7 +589,7 @@ function noteCard(n) {
   const depB=(n.deps||[]).length?`<span class="ndeps">🔗${n.deps.length}</span>`:'';
   const repB=n.repeat?`<span class="nrepeat">🔄 ${REPEAT_LABELS[n.repeat]}</span>`:'';
   const dcls=ov?'ov':nr?'near':'';
-  return`<div class="${ncls}" data-id="${n.id}" draggable="true"
+  return`<div class="${ncls}" data-id="${n.id}" data-pri="${n.pri}" draggable="true"
     onclick="openModal('${n.id}')"
     ondragstart="dragStart(event,'${n.id}')"
     ondragend="dragEnd(event)">
@@ -606,7 +613,7 @@ function noteCard(n) {
       </div>`:''}
       <div class="nftr-row">
         <div style="display:flex;gap:4px;align-items:center;">${repB}${depB}</div>
-        <div style="display:flex;align-items:center;gap:4px;">${avHtml}<span class="npri">${pI(n.pri)}</span></div>
+        <div style="display:flex;align-items:center;gap:4px;">${avHtml}<span class="npri${n.pri==='jefe'?' npri-jefe':''}">${pI(n.pri)}</span></div>
       </div>
       <div class="nprog">
         <div class="nprog-bar"><div class="nprog-fill" style="width:${prog}%;background:${progCol(prog)}"></div></div>
@@ -620,6 +627,7 @@ function noteCard(n) {
 function renderColBody(list) {
   if(!list.length) return `<div class="kcol-empty">Sin tareas aquí</div>`;
   const groups=[
+    {pri:'jefe',  lbl:'👮 Jefe'},
     {pri:'alta',  lbl:'🔴 Alta'},
     {pri:'normal',lbl:'⚪ Normal'},
     {pri:'baja',  lbl:'🔵 Baja'},
