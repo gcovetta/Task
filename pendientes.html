@@ -490,7 +490,7 @@ function getNextDue(due,repeat) {
 function migrate(n) {
   if(!n.status) n.status = n.done ? 'done' : 'todo';
   if(n.progress===undefined) n.progress=0;
-  n.done = (n.status==='done'||n.status==='boss');
+  n.done = n.status==='done';
   return n;
 }
 
@@ -607,7 +607,7 @@ function getList(status) {
 function noteCard(n) {
   const isDone=n.status==='done', isBoss=n.status==='boss';
   const ov=isOv(n.due)&&!isDone&&!isBoss, nr=isNr(n.due)&&!isDone&&!isBoss, blk=isBlk(n)&&!isDone&&!isBoss&&!ov;
-  const ncls=`note ${n.color}${(isDone||isBoss)?' done':''}${ov?' iov':blk?' blk':''}${isBoss?' boss-note':''}`;
+  const ncls=`note ${n.color}${isDone?' done':''}${ov?' iov':blk?' blk':''}${isBoss?' boss-note':''}`;
   const avs=n.assignees||[], prog=n.progress||0;
   const avHtml=avs.length?`<div class="navatars">${avs.slice(0,3).map(a=>`<div class="nav" style="background:${avc(a)}" title="${esc(a)}">${a[0].toUpperCase()}</div>`).join('')}${avs.length>3?`<div class="nav nav-more">+${avs.length-3}</div>`:''}</div>`:'';
   const depB=(n.deps||[]).length?`<span class="ndeps">🔗${n.deps.length}</span>`:'';
@@ -908,10 +908,10 @@ function saveNote() {
   const deps=getSelDeps();
   const isBoss=document.getElementById('fboss').checked;
   const status=isBoss ? 'boss' : (document.getElementById('fstatus').value||'todo');
-  const progress=isBoss ? 100 : (parseInt(document.getElementById('fprog').value)||0);
+  const progress=parseInt(document.getElementById('fprog').value)||0;
   const data={title,desc:document.getElementById('fd').value.trim(),
     cat:document.getElementById('fcat').value,pri:document.getElementById('fpri').value,
-    status,done:(status==='done'||status==='boss'),progress,
+    status,done:status==='done',progress,
     due:document.getElementById('fdue').value||null,
     dueTime:document.getElementById('ftime').value||'',
     repeat:document.getElementById('frep').value||'',
