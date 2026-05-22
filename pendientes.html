@@ -908,7 +908,7 @@ function saveNote() {
   const deps=getSelDeps();
   const isBoss=document.getElementById('fboss').checked;
   const status=isBoss ? 'boss' : (document.getElementById('fstatus').value||'todo');
-  const progress=parseInt(document.getElementById('fprog').value)||0;
+  const progress = parseInt(document.getElementById('fprog').value)||0;
   const data={title,desc:document.getElementById('fd').value.trim(),
     cat:document.getElementById('fcat').value,pri:document.getElementById('fpri').value,
     status,done:status==='done',progress,
