@@ -73,9 +73,18 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .kcol-hdr{padding:10px 12px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:2px solid var(--border);position:sticky;top:0;z-index:5;background:var(--bg2);}
+.kcol.col-boss .kcol-hdr{color:#ffd700;border-bottom-color:rgba(255,215,0,.4);background:linear-gradient(135deg,#1a1a0a 0%,#1c1c10 100%);}
+.kcol.col-boss{background:linear-gradient(180deg,rgba(255,215,0,.03) 0%,transparent 40%);flex:0 0 200px;min-width:0;}
+.kcol.col-boss .kcol-body{justify-content:center;}
 .kcol.col-todo .kcol-hdr{color:#2ecc71;border-bottom-color:rgba(46,204,113,.4);}
 .kcol.col-wip  .kcol-hdr{color:#f39c12;border-bottom-color:rgba(243,156,18,.4);}
 .kcol.col-done .kcol-hdr{color:#7878a8;border-bottom-color:rgba(85,85,119,.4);}
+.boss-icon{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.boss-icon svg{filter:drop-shadow(0 2px 6px rgba(255,215,0,.4));}
+.boss-badge{font-size:.52rem;font-weight:900;color:#ffd700;letter-spacing:1px;text-transform:uppercase;opacity:.7;}
+/* Boss note style - gold shimmer */
+.note.boss-note{border:1px solid rgba(255,215,0,.35)!important;box-shadow:2px 3px 8px var(--shadow),0 0 0 1px rgba(255,215,0,.15),inset 0 0 20px rgba(255,215,0,.04)!important;}
+.note.boss-note::after{content:'⭐';}
 .kcol-cnt{font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:50px;background:var(--bg4);color:var(--text2);}
 .kcol-body{padding:8px;display:flex;flex-wrap:wrap;flex-direction:row;gap:5px;align-content:flex-start;min-height:80px;}
 .kcol-empty{text-align:center;padding:24px 10px;color:var(--text2);font-size:.72rem;opacity:.5;}
@@ -202,6 +211,17 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .dep-item-label{font-size:.8rem;color:var(--text);flex:1;}
 .dep-item-meta{font-size:.68rem;color:var(--text2);}
 .dep-empty{font-size:.78rem;color:var(--text2);text-align:center;padding:10px;}
+
+/* Boss checkbox */
+.boss-check-wrap{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border:1px solid rgba(255,215,0,.3);border-radius:8px;background:rgba(255,215,0,.05);
+  cursor:pointer;transition:all .2s;margin-top:4px;}
+.boss-check-wrap:hover{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.5);}
+.boss-check-wrap.active{background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.6);
+  box-shadow:0 0 12px rgba(255,215,0,.1);}
+.boss-check-wrap input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#ffd700;flex-shrink:0;}
+.boss-check-label{font-size:.82rem;font-weight:800;color:#ffd700;letter-spacing:.3px;display:flex;align-items:center;gap:6px;}
+.boss-check-sub{font-size:.68rem;color:var(--text2);font-weight:400;margin-left:auto;}
 
 /* Modal actions */
 .macts{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
@@ -344,6 +364,15 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
     </div>
   </div>
 
+  <label class="boss-check-wrap" id="boss-wrap" onclick="toggleBossCheck()">
+    <input type="checkbox" id="fboss" onclick="event.stopPropagation();toggleBossCheck()">
+    <span class="boss-check-label">
+      <svg width="20" height="18" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="16" cy="22" rx="15" ry="3.5" fill="#b8960a"/><ellipse cx="16" cy="22" rx="13" ry="2.5" fill="#ffd700"/><path d="M4 22 C4 22 5 10 16 10 C27 10 28 22 28 22 Z" fill="#1a237e"/><path d="M5.5 22 C5.5 22 6.5 12 16 12 C25.5 12 26.5 22 26.5 22 Z" fill="#283593"/><circle cx="16" cy="17" r="3.5" fill="#ffd700" opacity=".9"/><circle cx="16" cy="17" r="2.5" fill="#b8960a"/><text x="16" y="18.5" text-anchor="middle" font-size="3.5" fill="#fff" font-weight="900" font-family="Arial">★</text></svg>
+      Boss
+    </span>
+    <span class="boss-check-sub">Mover a columna Boss</span>
+  </label>
+
   <div class="fg-section">📅 VENCIMIENTO</div>
   <div class="fg-row">
     <div class="fg">
@@ -426,12 +455,13 @@ const AVC   = ['#8e44ad','#2980b9','#27ae60','#d35400','#c0392b','#16a085','#7f8
 const REPEAT_LABELS = {daily:'Diaria',weekly:'Semanal',biweekly:'Quincenal',monthly:'Mensual',yearly:'Anual'};
 const CAT_ICON = {personal:'🏠',trabajo:'💼',construccion:'🏗️'};
 
-const COLS_K = ['wip','todo','done'];
-const COL_LABEL = {todo:'📋 Backlog', wip:'⏳ En Progreso', done:'✅ Realizadas'};
-const COL_CLS   = {todo:'col-todo', wip:'col-wip', done:'col-done'};
-const NEXT_ST   = {todo:'wip', wip:'done', done:'todo'};
+const COLS_K = ['boss','wip','todo','done'];
+const COL_LABEL = {todo:'📋 Backlog', wip:'⏳ En Progreso', done:'✅ Realizadas', boss:'BOSS'};
+const COL_CLS   = {todo:'col-todo', wip:'col-wip', done:'col-done', boss:'col-boss'};
+const NEXT_ST   = {todo:'wip', wip:'done', done:'todo', boss:'todo'};
 const TOG_ICON  = {todo:'▶', wip:'✓', done:'↩'};
 const TOG_TITLE = {todo:'Iniciar', wip:'Completar', done:'Reabrir'};
+const BOSS_SVG  = `<svg width="32" height="28" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="16" cy="22" rx="15" ry="3.5" fill="#b8960a"/><ellipse cx="16" cy="22" rx="13" ry="2.5" fill="#ffd700"/><path d="M4 22 C4 22 5 10 16 10 C27 10 28 22 28 22 Z" fill="#1a237e"/><path d="M5.5 22 C5.5 22 6.5 12 16 12 C25.5 12 26.5 22 26.5 22 Z" fill="#283593"/><path d="M16 10 L16 20" stroke="#3949ab" stroke-width="1" stroke-dasharray="2,2"/><circle cx="16" cy="17" r="3.5" fill="#ffd700" opacity=".9"/><circle cx="16" cy="17" r="2.5" fill="#b8960a"/><text x="16" y="18.5" text-anchor="middle" font-size="3.5" fill="#fff" font-weight="900" font-family="Arial">★</text><path d="M4 22 Q2 22 2 23 Q2 24 4.5 24 L7 23.5 Z" fill="#b8960a"/><path d="M4 22 C4 22 10 20.5 16 20.5 C22 20.5 28 22 28 22" stroke="#ffd700" stroke-width="1.2" fill="none" opacity=".6"/></svg>`;
 
 /* helpers */
 function uid()  { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
@@ -505,7 +535,7 @@ async function syncNote(n) {
   try {
     const { error } = await sb.from('notes').upsert(toRow(n));
     if(error) throw error;
-  } catch(e) { console.error('sync error:', JSON.stringify(e), e?.message, e?.code, e?.details, e?.hint); showToast('⚠ Error al guardar en la nube', true); }
+  } catch(e) { console.error('sync:', e); showToast('⚠ Error al guardar en la nube', true); }
 }
 async function syncDelete(id) {
   try {
@@ -536,7 +566,7 @@ async function init() {
       saveLocal();
     }
   } catch(e) {
-    console.error('init error completo:', JSON.stringify(e), e?.message, e?.code, e?.details, e?.hint);
+    console.error('init:', e);
     notes = (JSON.parse(localStorage.getItem('garo_notes')||'null')||seedData()).map(migrate);
     showToast('⚠ Modo offline — sin conexión a la nube', true);
   }
@@ -561,7 +591,7 @@ function setSrch(v){ srch=v.toLowerCase();render(); }
 function getList(status) {
   let arr=notes.filter(n=>n.status===status);
   if(srch) arr=arr.filter(n=>n.title.toLowerCase().includes(srch)||(n.desc||'').toLowerCase().includes(srch)||(n.assignees||[]).some(a=>a.toLowerCase().includes(srch)));
-  if(fil==='done'&&status!=='done') return [];
+  if(fil==='done'&&status!=='done'&&status!=='boss') return [];
   else if(fil==='trabajo')      arr=arr.filter(n=>n.cat==='trabajo');
   else if(fil==='personal')     arr=arr.filter(n=>n.cat==='personal');
   else if(fil==='construccion') arr=arr.filter(n=>n.cat==='construccion');
@@ -575,8 +605,9 @@ function getList(status) {
 
 /* note card */
 function noteCard(n) {
-  const ov=isOv(n.due)&&n.status!=='done', nr=isNr(n.due)&&n.status!=='done', blk=isBlk(n)&&n.status!=='done'&&!ov;
-  const ncls=`note ${n.color}${n.status==='done'?' done':''}${ov?' iov':blk?' blk':''}`;
+  const isDone=n.status==='done', isBoss=n.status==='boss';
+  const ov=isOv(n.due)&&!isDone&&!isBoss, nr=isNr(n.due)&&!isDone&&!isBoss, blk=isBlk(n)&&!isDone&&!isBoss&&!ov;
+  const ncls=`note ${n.color}${isDone?' done':''}${ov?' iov':blk?' blk':''}${isBoss?' boss-note':''}`;
   const avs=n.assignees||[], prog=n.progress||0;
   const avHtml=avs.length?`<div class="navatars">${avs.slice(0,3).map(a=>`<div class="nav" style="background:${avc(a)}" title="${esc(a)}">${a[0].toUpperCase()}</div>`).join('')}${avs.length>3?`<div class="nav nav-more">+${avs.length-3}</div>`:''}</div>`:'';
   const depB=(n.deps||[]).length?`<span class="ndeps">🔗${n.deps.length}</span>`:'';
@@ -637,25 +668,29 @@ function render() {
   const todo=notes.filter(n=>n.status==='todo');
   const wip=notes.filter(n=>n.status==='wip');
   const done=notes.filter(n=>n.status==='done');
-  const ov=notes.filter(n=>isOv(n.due)&&n.status!=='done');
-  const constrA=notes.filter(n=>n.cat==='construccion'&&n.status!=='done');
+  const boss=notes.filter(n=>n.status==='boss');
+  const ov=notes.filter(n=>isOv(n.due)&&n.status!=='done'&&n.status!=='boss');
+  const constrA=notes.filter(n=>n.cat==='construccion'&&n.status!=='done'&&n.status!=='boss');
   stats.innerHTML=`
+    <span class="st">⭐ <strong>${boss.length}</strong> Boss</span>
     <span class="st">📋 <strong>${todo.length}</strong> por hacer</span>
     <span class="st">⏳ <strong>${wip.length}</strong> en progreso</span>
     <span class="st">✅ <strong>${done.length}</strong> realizadas</span>
     ${ov.length?`<span class="st danger">⚠️ <strong>${ov.length}</strong> vencidas</span>`:''}
-    <span class="st">💼 <strong>${notes.filter(n=>n.cat==='trabajo'&&n.status!=='done').length}</strong> trabajo</span>
-    <span class="st">🏠 <strong>${notes.filter(n=>n.cat==='personal'&&n.status!=='done').length}</strong> personal</span>
+    <span class="st">💼 <strong>${notes.filter(n=>n.cat==='trabajo'&&n.status!=='done'&&n.status!=='boss').length}</strong> trabajo</span>
+    <span class="st">🏠 <strong>${notes.filter(n=>n.cat==='personal'&&n.status!=='done'&&n.status!=='boss').length}</strong> personal</span>
     ${constrA.length?`<span class="st">🏗️ <strong>${constrA.length}</strong> construcción</span>`:''}`;
 
   kanban.innerHTML=COLS_K.map(st=>{
     const list=getList(st);
+    const hdrContent = st==='boss'
+      ? `<div class="boss-icon">${BOSS_SVG}<span class="boss-badge">Boss</span></div><span class="kcol-cnt">${list.length}</span>`
+      : `<span>${COL_LABEL[st]}</span><span class="kcol-cnt">${list.length}</span>`;
     return`<div class="kcol ${COL_CLS[st]}" id="col-${st}"
         ondragover="event.preventDefault();dragOver(this)"
         ondrop="drop(event,'${st}')">
       <div class="kcol-hdr">
-        <span>${COL_LABEL[st]}</span>
-        <span class="kcol-cnt">${list.length}</span>
+        ${hdrContent}
       </div>
       <div class="kcol-body">
         ${renderColBody(list)}
@@ -668,7 +703,7 @@ function render() {
 function quickDone(id) {
   const n=notes.find(x=>x.id===id);
   if(!n) return;
-  if(n.status==='done'){ n.status='todo'; n.done=false; saveLocal(); render(); syncNote(n); return; }
+  if(n.status==='done'||n.status==='boss'){ n.status='todo'; n.done=false; saveLocal(); render(); syncNote(n); return; }
   n.status='done'; n.done=true; n.progress=100;
   if(n.repeat) {
     saveLocal(); render();
@@ -731,9 +766,9 @@ function drop(e,status) {
   const n=notes.find(x=>x.id===id);
   if(!n||n.status===status) return;
   const prev=n.status;
-  n.status=status; n.done=status==='done';
-  if(status==='done') n.progress=100;
-  if(status==='done'&&prev!=='done'&&n.repeat) {
+  n.status=status; n.done=(status==='done'||status==='boss');
+  if(status==='done'||status==='boss') n.progress=100;
+  if(status==='done'&&prev!=='done'&&prev!=='boss'&&n.repeat) {
     saveLocal(); render();
     const nd=getNextDue(n.due,n.repeat);
     const nn={...n,id:uid(),status:'todo',done:false,ts:Date.now(),due:nd,progress:0};
@@ -743,6 +778,22 @@ function drop(e,status) {
     syncNote(n); syncNote(nn);
   } else { saveLocal(); render(); syncNote(n); }
   dragId=null;
+}
+
+/* boss checkbox */
+function toggleBossCheck() {
+  const cb = document.getElementById('fboss');
+  const wrap = document.getElementById('boss-wrap');
+  // toggled by label click already changes cb.checked, so just sync state
+  setTimeout(() => {
+    wrap.classList.toggle('active', cb.checked);
+  }, 0);
+}
+function setBossCheck(val) {
+  const cb = document.getElementById('fboss');
+  const wrap = document.getElementById('boss-wrap');
+  cb.checked = val;
+  wrap.classList.toggle('active', val);
 }
 
 /* color picker */
@@ -819,13 +870,14 @@ function openModal(id=null) {
     document.getElementById('fd').value=n.desc||'';
     document.getElementById('fcat').value=n.cat;
     document.getElementById('fpri').value=n.pri;
-    document.getElementById('fstatus').value=n.status||'todo';
+    document.getElementById('fstatus').value=(n.status==='boss'?'todo':n.status)||'todo';
     document.getElementById('fdue').value=n.due||'';
     document.getElementById('ftime').value=n.dueTime||'';
     document.getElementById('frep').value=n.repeat||'';
     const prog=n.progress||0;
     document.getElementById('fprog').value=prog;
     document.getElementById('fprog-val').textContent=prog+'%';
+    setBossCheck(n.status==='boss');
     selCol=n.color; editAsn=[...(n.assignees||[])]; bdel.classList.remove('hidden');
     buildDepList(id,n.deps||[]);
   } else {
@@ -839,6 +891,7 @@ function openModal(id=null) {
     document.getElementById('frep').value='';
     document.getElementById('fprog').value=0;
     document.getElementById('fprog-val').textContent='0%';
+    setBossCheck(false);
     selCol=COLS[Math.floor(Math.random()*COLS.length)]; editAsn=[]; bdel.classList.add('hidden');
     buildDepList(null,[]);
   }
@@ -853,8 +906,9 @@ function saveNote() {
   const title=document.getElementById('ft').value.trim();
   if(!title){ document.getElementById('ft').focus(); return; }
   const deps=getSelDeps();
-  const status=document.getElementById('fstatus').value||'todo';
-  const progress=parseInt(document.getElementById('fprog').value)||0;
+  const isBoss=document.getElementById('fboss').checked;
+  const status=isBoss ? 'boss' : (document.getElementById('fstatus').value||'todo');
+  const progress = parseInt(document.getElementById('fprog').value)||0;
   const data={title,desc:document.getElementById('fd').value.trim(),
     cat:document.getElementById('fcat').value,pri:document.getElementById('fpri').value,
     status,done:status==='done',progress,
@@ -931,17 +985,6 @@ document.addEventListener('keydown',e=>{
   }
   if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)&&!document.getElementById('ov').classList.contains('hidden'))saveNote();
 });
-
-/* ── Keepalive: ping Supabase cada 4 minutos para evitar pausa ── */
-async function keepAlive() {
-  try {
-    await sb.from('notes').select('id').limit(1);
-    console.debug('🟢 Supabase ping OK', new Date().toLocaleTimeString());
-  } catch(e) {
-    console.debug('🔴 Supabase ping falló', e.message);
-  }
-}
-setInterval(keepAlive, 4 * 60 * 1000); // cada 4 minutos
 
 init();
 </script>
