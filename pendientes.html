@@ -109,6 +109,7 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .note.done{opacity:.5;}.note.done .ntit{text-decoration:line-through;}
 .note.dragging{opacity:.25;transform:scale(.96);}
 .note[draggable=true]{cursor:grab;}.note[draggable=true]:active{cursor:grabbing;}
+.note.drop-target{outline:2px dashed var(--accent);outline-offset:2px;transform:translateY(-2px);}
 
 /* ribbons */
 .note .ribbon{position:absolute;top:18px;right:0;font-size:.55rem;font-weight:800;
@@ -1355,7 +1356,10 @@ function noteCard(n) {
   return`<div class="${ncls}" data-id="${n.id}" draggable="true"
     onclick="openModal('${n.id}')"
     ondragstart="dragStart(event,'${n.id}')"
-    ondragend="dragEnd(event)">
+    ondragend="dragEnd(event)"
+    ondragover="event.preventDefault();noteDragOver(event,'${n.id}')"
+    ondragleave="noteDragLeave(event)"
+    ondrop="noteDrop(event,'${n.id}','${n.status}')">
     <div class="ribbon rib-ov">⚠ Vencida</div>
     <div class="ribbon rib-blk">🔒 Bloqueada</div>
     <div class="nhdr">
@@ -1493,16 +1497,59 @@ function dragStart(e,id) {
 function dragEnd(e) {
   e.target.classList.remove('dragging');
   document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('drag-over'));
+  document.querySelectorAll('.note.drop-target').forEach(el=>el.classList.remove('drop-target'));
   dragId=null;
 }
 function dragOver(col) {
   document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('drag-over'));
   col.classList.add('drag-over');
 }
+function noteDragOver(e,targetId) {
+  e.stopPropagation();
+  if(targetId===dragId) return;
+  document.querySelectorAll('.note.drop-target').forEach(el=>el.classList.remove('drop-target'));
+  const el=document.querySelector(`[data-id="${targetId}"]`);
+  if(el) el.classList.add('drop-target');
+}
+function noteDragLeave(e) {
+  e.stopPropagation();
+  const el=e.currentTarget;
+  if(el) el.classList.remove('drop-target');
+}
+function noteDrop(e,targetId,colStatus) {
+  e.preventDefault(); e.stopPropagation();
+  document.querySelectorAll('.note.drop-target').forEach(el=>el.classList.remove('drop-target'));
+  const id=dragId||e.dataTransfer.getData('text/plain');
+  if(!id||id===targetId) return;
+  const n=notes.find(x=>x.id===id);
+  const target=notes.find(x=>x.id===targetId);
+  if(!n||!target) return;
+  const prevStatus=n.status;
+  // Adoptar prioridad del destino
+  n.pri=target.pri;
+  // Cambiar columna si es diferente
+  if(n.status!==colStatus) {
+    n.status=colStatus; n.done=(colStatus==='done'||colStatus==='boss');
+    if(colStatus==='done'||colStatus==='boss') n.progress=100;
+    if(colStatus==='done'&&prevStatus!=='done'&&prevStatus!=='boss'&&n.repeat) {
+      saveLocal(); render();
+      const nd=getNextDue(n.due,n.repeat);
+      const nn={...n,id:uid(),status:'todo',done:false,ts:Date.now(),due:nd,progress:0};
+      notes.unshift(nn);
+      saveLocal(); render();
+      showToast(`🔄 Próxima ${REPEAT_LABELS[n.repeat].toLowerCase()}: ${fmt(nd)}`);
+      syncNote(n); syncNote(nn);
+      dragId=null; return;
+    }
+  }
+  saveLocal(); render(); syncNote(n);
+  dragId=null;
+}
 function drop(e,status) {
   e.preventDefault();
   const id=dragId||e.dataTransfer.getData('text/plain');
   document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('drag-over'));
+  document.querySelectorAll('.note.drop-target').forEach(el=>el.classList.remove('drop-target'));
   if(!id) return;
   const n=notes.find(x=>x.id===id);
   if(!n||n.status===status) return;
