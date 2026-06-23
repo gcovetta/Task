@@ -64,12 +64,20 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .kanban{display:flex;gap:0;padding:0;overflow-x:auto;align-items:stretch;
   min-height:calc(100vh - 162px);margin:14px 20px 24px;
   background:var(--bg2);border-radius:12px;border:1px solid var(--border);overflow:hidden;}
-.kcol{flex:1;min-width:300px;display:flex;flex-direction:column;
+.kcol{display:flex;flex-direction:column;
   background:transparent;border-right:1px solid var(--border);
-  transition:background .15s;}
-.kcol.col-done{flex:0 0 200px;min-width:0;}
-.kcol:last-child{border-right:none;}
+  transition:background .15s;position:relative;min-width:180px;width:340px;flex-shrink:0;}
+.kcol:last-child{border-right:none;flex:1 1 auto;}
 .kcol.drag-over{background:rgba(124,108,255,.06);}
+
+/* Resize handle */
+.col-resizer{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;
+  z-index:20;display:flex;align-items:center;justify-content:center;}
+.col-resizer::after{content:'';width:3px;height:40px;border-radius:3px;
+  background:var(--border);transition:background .2s,height .2s;}
+.col-resizer:hover::after,.col-resizer.resizing::after{background:var(--accent);height:60px;}
+.kanban.is-resizing{cursor:col-resize;user-select:none;}
+
 .kcol-hdr{padding:10px 12px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:2px solid var(--border);position:sticky;top:0;z-index:5;background:var(--bg2);}
@@ -77,16 +85,17 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .kcol.col-wip  .kcol-hdr{color:#f39c12;border-bottom-color:rgba(243,156,18,.4);}
 .kcol.col-done .kcol-hdr{color:#7878a8;border-bottom-color:rgba(85,85,119,.4);}
 .kcol-cnt{font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:50px;background:var(--bg4);color:var(--text2);}
-.kcol-body{padding:8px;display:flex;flex-wrap:wrap;flex-direction:row;gap:5px;align-content:flex-start;min-height:80px;}
-.kcol-empty{text-align:center;padding:24px 10px;color:var(--text2);font-size:.72rem;opacity:.5;}
-.pri-div{display:flex;align-items:center;gap:5px;width:100%;margin:5px 0 2px;
+.kcol-body{padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:6px;align-content:start;min-height:80px;}
+.kcol-empty{text-align:center;padding:24px 10px;color:var(--text2);font-size:.72rem;opacity:.5;grid-column:1/-1;}
+.pri-div{display:flex;align-items:center;gap:5px;grid-column:1/-1;margin:5px 0 2px;
   font-size:.56rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
 .pri-div::before,.pri-div::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* ── Sticky Note ── */
 .note{border-radius:4px;padding:8px 9px 7px;cursor:pointer;
   transition:transform .18s,box-shadow .18s,opacity .18s;position:relative;
-  display:flex;flex-direction:column;flex:0 0 138px;width:138px;
+  display:flex;flex-direction:column;min-width:0;width:100%;
   box-shadow:2px 3px 8px var(--shadow),0 0 0 1px rgba(255,255,255,.04);}
 .note::before{content:'';position:absolute;top:0;left:0;right:0;height:18px;
   background:rgba(0,0,0,.12);border-radius:4px 4px 0 0;}
@@ -519,6 +528,37 @@ let notes = [];
 let editId=null, selCol='yellow', fil='all', srt='created', srch='';
 let editAsn=[], dragId=null;
 
+/* column widths */
+let colWidths = JSON.parse(localStorage.getItem('garo_colwidths')||'{}');
+let _rsz={active:false,col:null,startX:0,startW:0};
+
+function startResize(e,colId){
+  e.preventDefault(); e.stopPropagation();
+  const el=document.getElementById('col-'+colId);
+  _rsz={active:true,col:colId,el,startX:e.clientX,startW:el.offsetWidth};
+  document.getElementById('kanban').classList.add('is-resizing');
+  document.querySelector(`#col-${colId} .col-resizer`).classList.add('resizing');
+  document.addEventListener('mousemove',onResize);
+  document.addEventListener('mouseup',stopResize);
+}
+function onResize(e){
+  if(!_rsz.active) return;
+  const w=Math.max(180, _rsz.startW+(e.clientX-_rsz.startX));
+  _rsz.el.style.width=w+'px';
+  _rsz.el.style.flexShrink='0';
+}
+function stopResize(){
+  if(!_rsz.active) return;
+  const w=_rsz.el.offsetWidth;
+  colWidths[_rsz.col]=w;
+  localStorage.setItem('garo_colwidths',JSON.stringify(colWidths));
+  document.getElementById('kanban').classList.remove('is-resizing');
+  document.querySelector(`#col-${_rsz.col} .col-resizer`)?.classList.remove('resizing');
+  document.removeEventListener('mousemove',onResize);
+  document.removeEventListener('mouseup',stopResize);
+  _rsz.active=false;
+}
+
 function saveLocal(){ localStorage.setItem('garo_notes',JSON.stringify(notes)); }
 
 async function init() {
@@ -650,9 +690,11 @@ function render() {
 
   kanban.innerHTML=COLS_K.map(st=>{
     const list=getList(st);
-    return`<div class="kcol ${COL_CLS[st]}" id="col-${st}"
+    const savedW=colWidths[st]?`width:${colWidths[st]}px;flex-shrink:0;`:'';
+    return`<div class="kcol ${COL_CLS[st]}" id="col-${st}" style="${savedW}"
         ondragover="event.preventDefault();dragOver(this)"
         ondrop="drop(event,'${st}')">
+      <div class="col-resizer" onmousedown="startResize(event,'${st}')"></div>
       <div class="kcol-hdr">
         <span>${COL_LABEL[st]}</span>
         <span class="kcol-cnt">${list.length}</span>
