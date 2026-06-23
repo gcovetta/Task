@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0047)https://gcovetta.github.io/Task/pendientes.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📌 Mis Pendientes</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./📌 Mis Pendientes_files/supabase-js@2"></script>
 <style>
 :root {
   color-scheme: dark;
@@ -64,17 +64,22 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .kanban{display:flex;gap:0;padding:0;overflow-x:auto;align-items:stretch;
   min-height:calc(100vh - 162px);margin:14px 20px 24px;
   background:var(--bg2);border-radius:12px;border:1px solid var(--border);overflow:hidden;}
-.kcol{flex:1;min-width:300px;display:flex;flex-direction:column;
+.kcol{display:flex;flex-direction:column;position:relative;
   background:transparent;border-right:1px solid var(--border);
-  transition:background .15s;}
-.kcol.col-done{flex:0 0 200px;min-width:0;}
-.kcol:last-child{border-right:none;}
+  transition:background .15s;min-width:180px;width:340px;flex-shrink:0;}
+.kcol:last-child{border-right:none;flex:1 1 auto;}
 .kcol.drag-over{background:rgba(124,108,255,.06);}
+.col-resizer{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;z-index:20;}
+.col-resizer::after{content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);width:3px;height:48px;border-radius:3px;
+  background:var(--border);transition:background .2s,height .2s;}
+.col-resizer:hover::after,.col-resizer.resizing::after{background:var(--accent);height:64px;}
+.kanban.is-resizing{cursor:col-resize;user-select:none;}
 .kcol-hdr{padding:10px 12px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:2px solid var(--border);position:sticky;top:0;z-index:5;background:var(--bg2);}
 .kcol.col-boss .kcol-hdr{color:#ffd700;border-bottom-color:rgba(255,215,0,.4);background:linear-gradient(135deg,#1a1a0a 0%,#1c1c10 100%);}
-.kcol.col-boss{background:linear-gradient(180deg,rgba(255,215,0,.03) 0%,transparent 40%);flex:0 0 200px;min-width:0;}
+.kcol.col-boss{background:linear-gradient(180deg,rgba(255,215,0,.03) 0%,transparent 40%);}
 .kcol.col-boss .kcol-body{justify-content:center;}
 .kcol.col-todo .kcol-hdr{color:#2ecc71;border-bottom-color:rgba(46,204,113,.4);}
 .kcol.col-wip  .kcol-hdr{color:#f39c12;border-bottom-color:rgba(243,156,18,.4);}
@@ -86,16 +91,16 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
 .note.boss-note{border:1px solid rgba(255,215,0,.35)!important;box-shadow:2px 3px 8px var(--shadow),0 0 0 1px rgba(255,215,0,.15),inset 0 0 20px rgba(255,215,0,.04)!important;}
 .note.boss-note::after{content:'⭐';}
 .kcol-cnt{font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:50px;background:var(--bg4);color:var(--text2);}
-.kcol-body{padding:8px;display:flex;flex-wrap:wrap;flex-direction:row;gap:5px;align-content:flex-start;min-height:80px;}
-.kcol-empty{text-align:center;padding:24px 10px;color:var(--text2);font-size:.72rem;opacity:.5;}
-.pri-div{display:flex;align-items:center;gap:5px;width:100%;margin:5px 0 2px;
+.kcol-body{padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;align-content:start;min-height:80px;}
+.kcol-empty{text-align:center;padding:24px 10px;color:var(--text2);font-size:.72rem;opacity:.5;grid-column:1/-1;}
+.pri-div{display:flex;align-items:center;gap:5px;grid-column:1/-1;margin:5px 0 2px;
   font-size:.56rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
 .pri-div::before,.pri-div::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* ── Sticky Note ── */
 .note{border-radius:4px;padding:8px 9px 7px;cursor:pointer;
   transition:transform .18s,box-shadow .18s,opacity .18s;position:relative;
-  display:flex;flex-direction:column;flex:0 0 138px;width:138px;
+  display:flex;flex-direction:column;min-width:0;width:100%;
   box-shadow:2px 3px 8px var(--shadow),0 0 0 1px rgba(255,255,255,.04);}
 .note::before{content:'';position:absolute;top:0;left:0;right:0;height:18px;
   background:rgba(0,0,0,.12);border-radius:4px 4px 0 0;}
@@ -290,17 +295,17 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
   <div class="hbtns">
     <a class="btn-tree" href="https://gcovetta.github.io/portafolio-tracker/GastoTrack_6.html">💰 Gastos</a>
     <button class="btn-tree" onclick="openTree()">🌳 Árbol</button>
-    <button class="btn-add"  onclick="openModal()" title="Nueva nota">🗒️</button>
+    <button class="btn-add" onclick="openModal()" title="Nueva nota">🗒️</button>
   </div>
 </header>
 
 <div class="filters">
-  <button class="fb active"  onclick="sf('all',this)">🗂️ Todos</button>
-  <button class="fb ft"      onclick="sf('trabajo',this)">💼 Trabajo</button>
-  <button class="fb fp"      onclick="sf('personal',this)">🏠 Personal</button>
-  <button class="fb fc"      onclick="sf('construccion',this)">🏗️ Construcción</button>
-  <button class="fb fv"      onclick="sf('overdue',this)">⚠️ Vencidos</button>
-  <button class="fb fd"      onclick="sf('done',this)">✅ Completados</button>
+  <button class="fb active" onclick="sf(&#39;all&#39;,this)">🗂️ Todos</button>
+  <button class="fb ft" onclick="sf(&#39;trabajo&#39;,this)">💼 Trabajo</button>
+  <button class="fb fp" onclick="sf(&#39;personal&#39;,this)">🏠 Personal</button>
+  <button class="fb fc" onclick="sf(&#39;construccion&#39;,this)">🏗️ Construcción</button>
+  <button class="fb fv" onclick="sf(&#39;overdue&#39;,this)">⚠️ Vencidos</button>
+  <button class="fb fd" onclick="sf(&#39;done&#39;,this)">✅ Completados</button>
   <div class="fsp"></div>
   <select class="srt" onchange="setSrt(this.value)">
     <option value="created">Más recientes</option>
@@ -310,11 +315,720 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
   <input type="text" class="srch" placeholder="🔍 Buscar…" oninput="setSrch(this.value)">
 </div>
 
-<div class="stats" id="stats"></div>
-<div class="kanban" id="kanban"></div>
+<div class="stats" id="stats">
+    <span class="st">⭐ <strong>5</strong> Boss</span>
+    <span class="st">📋 <strong>13</strong> por hacer</span>
+    <span class="st">⏳ <strong>3</strong> en progreso</span>
+    <span class="st">✅ <strong>8</strong> realizadas</span>
+    
+    <span class="st">💼 <strong>7</strong> trabajo</span>
+    <span class="st">🏠 <strong>8</strong> personal</span>
+    <span class="st">🏗️ <strong>1</strong> construcción</span></div>
+<div class="kanban" id="kanban"><div class="kcol col-boss" id="col-boss" ondragover="event.preventDefault();dragOver(this)" ondrop="drop(event,&#39;boss&#39;)">
+      <div class="kcol-hdr">
+        <div class="boss-icon"><svg width="32" height="28" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="16" cy="22" rx="15" ry="3.5" fill="#b8960a"></ellipse><ellipse cx="16" cy="22" rx="13" ry="2.5" fill="#ffd700"></ellipse><path d="M4 22 C4 22 5 10 16 10 C27 10 28 22 28 22 Z" fill="#1a237e"></path><path d="M5.5 22 C5.5 22 6.5 12 16 12 C25.5 12 26.5 22 26.5 22 Z" fill="#283593"></path><path d="M16 10 L16 20" stroke="#3949ab" stroke-width="1" stroke-dasharray="2,2"></path><circle cx="16" cy="17" r="3.5" fill="#ffd700" opacity=".9"></circle><circle cx="16" cy="17" r="2.5" fill="#b8960a"></circle><text x="16" y="18.5" text-anchor="middle" font-size="3.5" fill="#fff" font-weight="900" font-family="Arial">★</text><path d="M4 22 Q2 22 2 23 Q2 24 4.5 24 L7 23.5 Z" fill="#b8960a"></path><path d="M4 22 C4 22 10 20.5 16 20.5 C22 20.5 28 22 28 22" stroke="#ffd700" stroke-width="1.2" fill="none" opacity=".6"></path></svg><span class="boss-badge">Boss</span></div><span class="kcol-cnt">5</span>
+      </div>
+      <div class="kcol-body">
+        <div class="note pink boss-note" data-id="mpdjueztei4vbsnszmo" draggable="true" onclick="openModal(&#39;mpdjueztei4vbsnszmo&#39;)" ondragstart="dragStart(event,&#39;mpdjueztei4vbsnszmo&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpdjueztei4vbsnszmo&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpdjueztei4vbsnszmo&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">B2B</div>
+    <div class="ndesc">Armado del plan</div>
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="pri-div"><span>⚪ Normal</span></div><div class="note teal boss-note" data-id="mpgymhhayegdtx35exq" draggable="true" onclick="openModal(&#39;mpgymhhayegdtx35exq&#39;)" ondragstart="dragStart(event,&#39;mpgymhhayegdtx35exq&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpgymhhayegdtx35exq&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpgymhhayegdtx35exq&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">TMA</div>
+    <div class="ndesc">2 reu semanales, reu comparticion de infra</div>
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note blue boss-note" data-id="mpgylwvsk5wgakimgml" draggable="true" onclick="openModal(&#39;mpgylwvsk5wgakimgml&#39;)" ondragstart="dragStart(event,&#39;mpgylwvsk5wgakimgml&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpgylwvsk5wgakimgml&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpgylwvsk5wgakimgml&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Herramientas e inventario</div>
+    <div class="ndesc">Blue Print de los temas para avanzar</div>
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note blue boss-note" data-id="mpgy3fc3pdgjtxw3qv" draggable="true" onclick="openModal(&#39;mpgy3fc3pdgjtxw3qv&#39;)" ondragstart="dragStart(event,&#39;mpgy3fc3pdgjtxw3qv&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpgy3fc3pdgjtxw3qv&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpgy3fc3pdgjtxw3qv&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Comparacion nube Oracle</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note yellow boss-note" data-id="moc7t7zugsl2ahhw58" draggable="true" onclick="openModal(&#39;moc7t7zugsl2ahhw58&#39;)" ondragstart="dragStart(event,&#39;moc7t7zugsl2ahhw58&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc7t7zugsl2ahhw58&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc7t7zugsl2ahhw58&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Publica vs Privada (Dotacion)</div>
+    <div class="ndesc">Armar ratio de dota, sacando DB SO o sumando a los de las tribus</div>
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div class="navatars"><div class="nav" style="background:#d35400" title="Garo">G</div><div class="nav" style="background:#16a085" title="Nestor">N</div></div><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div><div class="kcol col-wip" id="col-wip" ondragover="event.preventDefault();dragOver(this)" ondrop="drop(event,&#39;wip&#39;)">
+      <div class="kcol-hdr">
+        <span>⏳ En Progreso</span><span class="kcol-cnt">3</span>
+      </div>
+      <div class="kcol-body">
+        <div class="note teal" data-id="moh6q46s7let224s6k5" draggable="true" onclick="openModal(&#39;moh6q46s7let224s6k5&#39;)" ondragstart="dragStart(event,&#39;moh6q46s7let224s6k5&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moh6q46s7let224s6k5&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moh6q46s7let224s6k5&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Ver presupuesto y Render</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note purple" data-id="moc8innjb9hexfan6zu" draggable="true" onclick="openModal(&#39;moc8innjb9hexfan6zu&#39;)" ondragstart="dragStart(event,&#39;moc8innjb9hexfan6zu&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc8innjb9hexfan6zu&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8innjb9hexfan6zu&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Controlador de Faltas</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note blue" data-id="moc8cic1vwibv5qjs1g" draggable="true" onclick="openModal(&#39;moc8cic1vwibv5qjs1g&#39;)" ondragstart="dragStart(event,&#39;moc8cic1vwibv5qjs1g&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc8cic1vwibv5qjs1g&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8cic1vwibv5qjs1g&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Compra Servers</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div class="navatars"><div class="nav" style="background:#d35400" title="Garo">G</div></div><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div><div class="kcol col-todo" id="col-todo" ondragover="event.preventDefault();dragOver(this)" ondrop="drop(event,&#39;todo&#39;)">
+      <div class="kcol-hdr">
+        <span>📋 Backlog</span><span class="kcol-cnt">13</span>
+      </div>
+      <div class="kcol-body">
+        <div class="note yellow" data-id="mpgyurjhtiv3xkrt1ak" draggable="true" onclick="openModal(&#39;mpgyurjhtiv3xkrt1ak&#39;)" ondragstart="dragStart(event,&#39;mpgyurjhtiv3xkrt1ak&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpgyurjhtiv3xkrt1ak&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpgyurjhtiv3xkrt1ak&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Redes autonomas</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note teal" data-id="moh6qtxu4px6gsazlht" draggable="true" onclick="openModal(&#39;moh6qtxu4px6gsazlht&#39;)" ondragstart="dragStart(event,&#39;moh6qtxu4px6gsazlht&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moh6qtxu4px6gsazlht&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moh6qtxu4px6gsazlht&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Ver enrutamiento TMA SmartWifi</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div class="navatars"><div class="nav" style="background:#d35400" title="Facu">F</div></div><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="pri-div"><span>⚪ Normal</span></div><div class="note pink" data-id="mpmzn92qub9jmhyuxo" draggable="true" onclick="openModal(&#39;mpmzn92qub9jmhyuxo&#39;)" ondragstart="dragStart(event,&#39;mpmzn92qub9jmhyuxo&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpmzn92qub9jmhyuxo&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpmzn92qub9jmhyuxo&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">D+ Fin de junio</div>
+    
+    <div class="nftr">
+      <div class="nftr-row">
+        <span class="ndate ">📅 30/06/2026</span>
+        
+      </div>
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note pink" data-id="mpml4r7t2mu2qds9tkt" draggable="true" onclick="openModal(&#39;mpml4r7t2mu2qds9tkt&#39;)" ondragstart="dragStart(event,&#39;mpml4r7t2mu2qds9tkt&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpml4r7t2mu2qds9tkt&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpml4r7t2mu2qds9tkt&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Autorizar TUIDs</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note yellow" data-id="mpml4jpbxa84pl4izno" draggable="true" onclick="openModal(&#39;mpml4jpbxa84pl4izno&#39;)" ondragstart="dragStart(event,&#39;mpml4jpbxa84pl4izno&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpml4jpbxa84pl4izno&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpml4jpbxa84pl4izno&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Autorzar Gastos</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note orange" data-id="mph4jehtzt1zpi7iagk" draggable="true" onclick="openModal(&#39;mph4jehtzt1zpi7iagk&#39;)" ondragstart="dragStart(event,&#39;mph4jehtzt1zpi7iagk&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mph4jehtzt1zpi7iagk&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mph4jehtzt1zpi7iagk&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">ABL</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note red" data-id="mph2rcvoc2dlfqcnwpj" draggable="true" onclick="openModal(&#39;mph2rcvoc2dlfqcnwpj&#39;)" ondragstart="dragStart(event,&#39;mph2rcvoc2dlfqcnwpj&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mph2rcvoc2dlfqcnwpj&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mph2rcvoc2dlfqcnwpj&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">POC Oracle DRP</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note blue" data-id="mpgyv0f36yplzi5jg88" draggable="true" onclick="openModal(&#39;mpgyv0f36yplzi5jg88&#39;)" ondragstart="dragStart(event,&#39;mpgyv0f36yplzi5jg88&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mpgyv0f36yplzi5jg88&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mpgyv0f36yplzi5jg88&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Encuesta de clima ENPS</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note teal" data-id="mocb2gh6kvz9jnor1dg" draggable="true" onclick="openModal(&#39;mocb2gh6kvz9jnor1dg&#39;)" ondragstart="dragStart(event,&#39;mocb2gh6kvz9jnor1dg&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;mocb2gh6kvz9jnor1dg&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mocb2gh6kvz9jnor1dg&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Cargar Facturas</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note orange" data-id="moc8lfxosyl590c6h67" draggable="true" onclick="openModal(&#39;moc8lfxosyl590c6h67&#39;)" ondragstart="dragStart(event,&#39;moc8lfxosyl590c6h67&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc8lfxosyl590c6h67&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8lfxosyl590c6h67&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Rendir Tickets</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note green" data-id="moc8ki51k9zk3llaald" draggable="true" onclick="openModal(&#39;moc8ki51k9zk3llaald&#39;)" ondragstart="dragStart(event,&#39;moc8ki51k9zk3llaald&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc8ki51k9zk3llaald&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8ki51k9zk3llaald&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Telepase</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note pink" data-id="moc8k8w6vvq3w9fvuo" draggable="true" onclick="openModal(&#39;moc8k8w6vvq3w9fvuo&#39;)" ondragstart="dragStart(event,&#39;moc8k8w6vvq3w9fvuo&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc8k8w6vvq3w9fvuo&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8k8w6vvq3w9fvuo&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Cambiar Parabrisas</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div><div class="note purple" data-id="moc8i6tj9dsszzdcemv" draggable="true" onclick="openModal(&#39;moc8i6tj9dsszzdcemv&#39;)" ondragstart="dragStart(event,&#39;moc8i6tj9dsszzdcemv&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏗️ Construcción</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Completar" onclick="event.stopPropagation();quickDone(&#39;moc8i6tj9dsszzdcemv&#39;)">✓</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8i6tj9dsszzdcemv&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Compara Costos Obra</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:0%;background:rgba(0,0,0,.1)"></div></div>
+        <span class="nprog-pct">0%</span>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div><div class="kcol col-done" id="col-done" ondragover="event.preventDefault();dragOver(this)" ondrop="drop(event,&#39;done&#39;)">
+      <div class="kcol-hdr">
+        <span>✅ Realizadas</span><span class="kcol-cnt">8</span>
+      </div>
+      <div class="kcol-body">
+        <div class="note blue done" data-id="morqmffy2noj31nzqqw" draggable="true" onclick="openModal(&#39;morqmffy2noj31nzqqw&#39;)" ondragstart="dragStart(event,&#39;morqmffy2noj31nzqqw&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;morqmffy2noj31nzqqw&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;morqmffy2noj31nzqqw&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">AD Propuesta a Guille</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="note green done" data-id="mohm7541i59snm8mgdo" draggable="true" onclick="openModal(&#39;mohm7541i59snm8mgdo&#39;)" ondragstart="dragStart(event,&#39;mohm7541i59snm8mgdo&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;mohm7541i59snm8mgdo&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mohm7541i59snm8mgdo&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Enviar BIG BOX</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="note yellow done" data-id="mohk0raf154fz8j149d" draggable="true" onclick="openModal(&#39;mohk0raf154fz8j149d&#39;)" ondragstart="dragStart(event,&#39;mohk0raf154fz8j149d&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;mohk0raf154fz8j149d&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mohk0raf154fz8j149d&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Enviar BIG BOX</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="note green done" data-id="moc8k03yi43znqq84ng" draggable="true" onclick="openModal(&#39;moc8k03yi43znqq84ng&#39;)" ondragstart="dragStart(event,&#39;moc8k03yi43znqq84ng&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;moc8k03yi43znqq84ng&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8k03yi43znqq84ng&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Contar la $</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="note pink done" data-id="moc7kir2f0a7de5su5m" draggable="true" onclick="openModal(&#39;moc7kir2f0a7de5su5m&#39;)" ondragstart="dragStart(event,&#39;moc7kir2f0a7de5su5m&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;moc7kir2f0a7de5su5m&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc7kir2f0a7de5su5m&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Pago de servicios</div>
+    <div class="ndesc">Teléfono, internet, luz</div>
+    <div class="nftr">
+      <div class="nftr-row">
+        <span class="ndate ">📅 21/04/2026</span>
+        
+      </div>
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"><span class="nrepeat">🔄 Mensual</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">🔴</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="pri-div"><span>⚪ Normal</span></div><div class="note orange done" data-id="mohk05dzqq41vmt7l9q" draggable="true" onclick="openModal(&#39;mohk05dzqq41vmt7l9q&#39;)" ondragstart="dragStart(event,&#39;mohk05dzqq41vmt7l9q&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏠 Personal</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;mohk05dzqq41vmt7l9q&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;mohk05dzqq41vmt7l9q&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">contestar madera cocina al arquitecto</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="note blue done" data-id="moc8lpldf2f5txf5p2a" draggable="true" onclick="openModal(&#39;moc8lpldf2f5txf5p2a&#39;)" ondragstart="dragStart(event,&#39;moc8lpldf2f5txf5p2a&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">💼 Trabajo</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;moc8lpldf2f5txf5p2a&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8lpldf2f5txf5p2a&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Viaje RedHat</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div><div class="note pink done" data-id="moc8hudeibpfegwh9e" draggable="true" onclick="openModal(&#39;moc8hudeibpfegwh9e&#39;)" ondragstart="dragStart(event,&#39;moc8hudeibpfegwh9e&#39;)" ondragend="dragEnd(event)">
+    <div class="ribbon rib-ov">⚠ Vencida</div>
+    <div class="ribbon rib-blk">🔒 Bloqueada</div>
+    <div class="nhdr">
+      <span class="ncat">🏗️ Construcción</span>
+      <div class="nacts">
+        <button class="nab nab-ok" title="Reabrir" onclick="event.stopPropagation();quickDone(&#39;moc8hudeibpfegwh9e&#39;)">↩</button>
+        <button class="nab nab-del" title="Eliminar" onclick="event.stopPropagation();quickDel(&#39;moc8hudeibpfegwh9e&#39;)">✕</button>
+      </div>
+    </div>
+    <div class="ntit">Cocina (Mueble)</div>
+    
+    <div class="nftr">
+      
+      <div class="nftr-row">
+        <div style="display:flex;gap:4px;align-items:center;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div class="navatars"><div class="nav" style="background:#d35400" title="Garo">G</div></div><span class="npri">⚪</span></div>
+      </div>
+      <div class="nprog">
+        <div class="nprog-bar"><div class="nprog-fill" style="width:100%;background:rgba(46,204,113,.65)"></div></div>
+        <span class="nprog-pct">100%</span>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div></div>
 
 <div class="toast" id="toast"></div>
-<div id="loading"><div class="spin"></div><span class="load-txt">Cargando desde la nube…</span></div>
+<div id="loading" style="display: none;"><div class="spin"></div><span class="load-txt">Cargando desde la nube…</span></div>
 
 <!-- ═══ Edit/Create Modal ═══ -->
 <div class="overlay hidden" id="ov" onclick="ovc(event)">
@@ -359,15 +1073,14 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
     </div>
     <div class="fg">
       <label>% COMPLETADO <span id="fprog-val" class="prog-label">0%</span></label>
-      <input id="fprog" type="range" min="0" max="100" value="0" step="5"
-             oninput="document.getElementById('fprog-val').textContent=this.value+'%'">
+      <input id="fprog" type="range" min="0" max="100" value="0" step="5" oninput="document.getElementById(&#39;fprog-val&#39;).textContent=this.value+&#39;%&#39;">
     </div>
   </div>
 
   <label class="boss-check-wrap" id="boss-wrap" onclick="toggleBossCheck()">
     <input type="checkbox" id="fboss" onclick="event.stopPropagation();toggleBossCheck()">
     <span class="boss-check-label">
-      <svg width="20" height="18" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="16" cy="22" rx="15" ry="3.5" fill="#b8960a"/><ellipse cx="16" cy="22" rx="13" ry="2.5" fill="#ffd700"/><path d="M4 22 C4 22 5 10 16 10 C27 10 28 22 28 22 Z" fill="#1a237e"/><path d="M5.5 22 C5.5 22 6.5 12 16 12 C25.5 12 26.5 22 26.5 22 Z" fill="#283593"/><circle cx="16" cy="17" r="3.5" fill="#ffd700" opacity=".9"/><circle cx="16" cy="17" r="2.5" fill="#b8960a"/><text x="16" y="18.5" text-anchor="middle" font-size="3.5" fill="#fff" font-weight="900" font-family="Arial">★</text></svg>
+      <svg width="20" height="18" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="16" cy="22" rx="15" ry="3.5" fill="#b8960a"></ellipse><ellipse cx="16" cy="22" rx="13" ry="2.5" fill="#ffd700"></ellipse><path d="M4 22 C4 22 5 10 16 10 C27 10 28 22 28 22 Z" fill="#1a237e"></path><path d="M5.5 22 C5.5 22 6.5 12 16 12 C25.5 12 26.5 22 26.5 22 Z" fill="#283593"></path><circle cx="16" cy="17" r="3.5" fill="#ffd700" opacity=".9"></circle><circle cx="16" cy="17" r="2.5" fill="#b8960a"></circle><text x="16" y="18.5" text-anchor="middle" font-size="3.5" fill="#fff" font-weight="900" font-family="Arial">★</text></svg>
       Boss
     </span>
     <span class="boss-check-sub">Mover a columna Boss</span>
@@ -400,9 +1113,8 @@ header h1 small{opacity:.4;font-weight:300;font-size:.78rem;margin-left:6px;}
   <div class="fg-section">👤 PERSONAS</div>
   <div class="fg" style="position:relative;">
     <label>ASIGNADOS <span style="font-weight:400;opacity:.5;font-size:.68rem">(escribe + Enter)</span></label>
-    <div class="tag-wrap" id="twrap" onclick="document.getElementById('fasn').focus()">
-      <input id="fasn" class="tag-input" placeholder="Nombre o inicial…"
-             onkeydown="addAsnee(event)" oninput="filterSugg(this.value)">
+    <div class="tag-wrap" id="twrap" onclick="document.getElementById(&#39;fasn&#39;).focus()">
+      <input id="fasn" class="tag-input" placeholder="Nombre o inicial…" onkeydown="addAsnee(event)" oninput="filterSugg(this.value)">
     </div>
     <div class="asugg" id="asugg"></div>
   </div>
@@ -548,6 +1260,34 @@ async function syncDelete(id) {
 let notes = [];
 let editId=null, selCol='yellow', fil='all', srt='created', srch='';
 let editAsn=[], dragId=null;
+let colWidths=JSON.parse(localStorage.getItem('garo_colwidths')||'{}');
+let _rsz={active:false};
+
+function startResize(e,colId){
+  e.preventDefault(); e.stopPropagation();
+  const el=document.getElementById('col-'+colId);
+  _rsz={active:true,col:colId,el,startX:e.clientX,startW:el.offsetWidth};
+  document.getElementById('kanban').classList.add('is-resizing');
+  el.querySelector('.col-resizer').classList.add('resizing');
+  document.addEventListener('mousemove',onResize);
+  document.addEventListener('mouseup',stopResize);
+}
+function onResize(e){
+  if(!_rsz.active)return;
+  const w=Math.max(180,_rsz.startW+(e.clientX-_rsz.startX));
+  _rsz.el.style.width=w+'px';
+  _rsz.el.style.flexShrink='0';
+}
+function stopResize(){
+  if(!_rsz.active)return;
+  colWidths[_rsz.col]=_rsz.el.offsetWidth;
+  localStorage.setItem('garo_colwidths',JSON.stringify(colWidths));
+  document.getElementById('kanban').classList.remove('is-resizing');
+  _rsz.el.querySelector('.col-resizer')?.classList.remove('resizing');
+  document.removeEventListener('mousemove',onResize);
+  document.removeEventListener('mouseup',stopResize);
+  _rsz.active=false;
+}
 
 function saveLocal(){ localStorage.setItem('garo_notes',JSON.stringify(notes)); }
 
@@ -686,9 +1426,11 @@ function render() {
     const hdrContent = st==='boss'
       ? `<div class="boss-icon">${BOSS_SVG}<span class="boss-badge">Boss</span></div><span class="kcol-cnt">${list.length}</span>`
       : `<span>${COL_LABEL[st]}</span><span class="kcol-cnt">${list.length}</span>`;
-    return`<div class="kcol ${COL_CLS[st]}" id="col-${st}"
+    const wStyle=colWidths[st]?`width:${colWidths[st]}px;flex-shrink:0;`:'';
+    return`<div class="kcol ${COL_CLS[st]}" id="col-${st}" style="${wStyle}"
         ondragover="event.preventDefault();dragOver(this)"
         ondrop="drop(event,'${st}')">
+      <div class="col-resizer" onmousedown="startResize(event,'${st}')"></div>
       <div class="kcol-hdr">
         ${hdrContent}
       </div>
@@ -988,5 +1730,6 @@ document.addEventListener('keydown',e=>{
 
 init();
 </script>
-</body>
-</html>
+
+
+</body></html>
